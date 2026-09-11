@@ -1,0 +1,312 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="theme-color" content="#315c43">
+<title>Grocery Checklist</title>
+<style>
+*{box-sizing:border-box}
+body{margin:0;background:#f7f7f2;color:#20231f;font-family:-apple-system,BlinkMacSystemFont,"SF Pro Display","Segoe UI",sans-serif}
+button,input,select{font:inherit}
+.app{width:100%;max-width:600px;min-height:100vh;margin:auto;padding:20px 18px 100px}
+header{padding:12px 2px 20px}
+h1{font-size:32px;line-height:1.05;margin:0 0 7px;letter-spacing:-1px}
+.subtitle{color:#777b74;font-size:15px}
+.nav{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:20px}
+.nav button{border:0;border-radius:14px;padding:14px 8px;background:#e8e9e2;color:#6b7068;font-weight:800;cursor:pointer;-webkit-tap-highlight-color:transparent}
+.nav button.active{background:#315c43;color:#fff}
+.page{display:none}
+.page.active{display:block}
+.card{background:#fff;border-radius:18px;padding:17px;box-shadow:0 2px 12px #0000000b;margin-bottom:18px}
+label{display:block;font-size:12px;font-weight:800;color:#666b63;margin-bottom:7px;letter-spacing:.4px}
+input,select{width:100%;border:1px solid #e1e3dc;border-radius:12px;background:#fff;padding:14px;font-size:17px;outline:none}
+input:focus,select:focus{border-color:#315c43;box-shadow:0 0 0 3px #315c4312}
+.field{margin-bottom:14px}
+.add{width:100%;border:0;border-radius:13px;background:#315c43;color:#fff;padding:15px;font-weight:800;cursor:pointer;-webkit-tap-highlight-color:transparent}
+.add:active,.action:active,.nav button:active{transform:scale(.98)}
+.section{font-size:12px;font-weight:900;color:#777b74;letter-spacing:1px;text-transform:uppercase;margin:18px 3px 8px}
+.item{display:flex;align-items:center;gap:12px;background:#fff;border-radius:16px;padding:13px;margin:8px 0;box-shadow:0 1px 7px #00000008}
+.iteminfo{flex:1;min-width:0}
+.itemname{font-size:17px;font-weight:750;overflow-wrap:anywhere}
+.qty{font-size:14px;color:#777b74;margin-top:3px}
+.badge{display:inline-block;margin-top:6px;background:#edf2ed;color:#315c43;padding:4px 8px;border-radius:7px;font-size:12px;font-weight:700}
+.actions{display:flex;gap:6px}
+.action{width:44px;height:44px;border:0;border-radius:11px;background:#f0f1eb;cursor:pointer;display:grid;place-items:center;font-size:19px}
+.checkrow{cursor:pointer}
+.checkbox{width:29px;height:29px;border:2px solid #aeb4aa;border-radius:50%;flex:none;display:grid;place-items:center;color:white;font-weight:900}
+.empty{text-align:center;padding:48px 20px;color:#777b74}
+.empty .emoji{font-size:42px;margin-bottom:10px}
+.empty strong{display:block;color:#20231f;font-size:18px;margin-bottom:5px}
+.modal{position:fixed;inset:0;background:#0006;display:none;align-items:flex-end;z-index:20}
+.modal.show{display:flex}
+.sheet{width:100%;max-width:600px;margin:auto;background:white;border-radius:22px 22px 0 0;padding:20px 18px calc(22px + env(safe-area-inset-bottom))}
+.sheet h2{margin:0 0 17px;font-size:22px}
+.cancel{width:100%;border:0;border-radius:12px;padding:14px;background:#eee;margin-top:9px;font-weight:800}
+.toast{position:fixed;left:50%;bottom:25px;transform:translate(-50%,20px);background:#20231f;color:#fff;padding:12px 16px;border-radius:13px;opacity:0;pointer-events:none;transition:.2s;z-index:30;font-size:14px}
+.toast.show{opacity:1;transform:translate(-50%,0)}
+</style>
+</head>
+<body>
+<div class="app">
+<header>
+<h1>Grocery Checklist 🛒</h1>
+<div class="subtitle">Add what you need. Check it off when you shop.</div>
+</header>
+
+<div class="nav">
+<button id="navBuy" class="active" type="button">📝 To Buy</button>
+<button id="navCheck" type="button">✅ Checklist</button>
+</div>
+
+<section id="pageBuy" class="page active">
+<div class="card">
+<label for="itemName">ITEM</label>
+<input id="itemName" type="text" placeholder="e.g. Milk" autocomplete="off">
+
+<div class="field" style="margin-top:14px">
+<label for="itemQty">QUANTITY <span style="font-weight:500;color:#999">(optional)</span></label>
+<input id="itemQty" type="text" placeholder="e.g. 2 litres, 500 g, 3 packets" autocomplete="off">
+</div>
+
+<div class="field">
+<label for="itemCategory">CATEGORY <span style="font-weight:500;color:#999">(optional)</span></label>
+<select id="itemCategory">
+<option value="">No category</option>
+<option value="Produce">Produce</option>
+<option value="Dairy">Dairy</option>
+<option value="Pantry">Pantry</option>
+<option value="Household">Household</option>
+</select>
+</div>
+
+<button id="addButton" class="add" type="button">＋ Add to list</button>
+</div>
+<div id="buyItems"></div>
+</section>
+
+<section id="pageCheck" class="page">
+<div id="checkItems"></div>
+</section>
+</div>
+
+<div id="editModal" class="modal">
+<div class="sheet">
+<h2>Edit grocery item</h2>
+<label for="editName">ITEM</label>
+<input id="editName" type="text">
+<div class="field" style="margin-top:14px">
+<label for="editQty">QUANTITY <span style="font-weight:500;color:#999">(optional)</span></label>
+<input id="editQty" type="text">
+</div>
+<div class="field">
+<label for="editCategory">CATEGORY <span style="font-weight:500;color:#999">(optional)</span></label>
+<select id="editCategory">
+<option value="">No category</option>
+<option value="Produce">Produce</option>
+<option value="Dairy">Dairy</option>
+<option value="Pantry">Pantry</option>
+<option value="Household">Household</option>
+</select>
+</div>
+<button id="saveEdit" class="add" type="button">Save changes</button>
+<button id="cancelEdit" class="cancel" type="button">Cancel</button>
+</div>
+</div>
+
+<div id="toast" class="toast"></div>
+
+<script>
+(function(){
+"use strict";
+
+var STORAGE="grocery-checklist-final-v1";
+var categories=["Produce","Dairy","Pantry","Household"];
+var items=[];
+var editingId=null;
+var lastDeleted=null;
+var toastTimer=null;
+
+function load(){
+  try{
+    var raw=localStorage.getItem(STORAGE);
+    if(raw) items=JSON.parse(raw)||[];
+  }catch(e){items=[];}
+}
+
+function save(){
+  try{localStorage.setItem(STORAGE,JSON.stringify(items));}
+  catch(e){}
+}
+
+function id(){
+  return Date.now().toString(36)+"-"+Math.random().toString(36).slice(2);
+}
+
+function esc(value){
+  return String(value||"").replace(/[&<>"']/g,function(c){
+    return {"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c];
+  });
+}
+
+function showToast(text){
+  var t=document.getElementById("toast");
+  t.textContent=text;
+  t.classList.add("show");
+  clearTimeout(toastTimer);
+  toastTimer=setTimeout(function(){t.classList.remove("show");},2200);
+}
+
+function switchPage(page){
+  var buy=page==="buy";
+  document.getElementById("pageBuy").classList.toggle("active",buy);
+  document.getElementById("pageCheck").classList.toggle("active",!buy);
+  document.getElementById("navBuy").classList.toggle("active",buy);
+  document.getElementById("navCheck").classList.toggle("active",!buy);
+}
+
+function groupedHTML(list, checklist){
+  var out="";
+  categories.forEach(function(cat){
+    var arr=list.filter(function(x){return x.category===cat;});
+    if(!arr.length)return;
+    out+='<div class="section">'+cat+'</div>';
+    arr.forEach(function(x){out+=itemHTML(x,checklist);});
+  });
+  var other=list.filter(function(x){return !x.category||categories.indexOf(x.category)<0;});
+  if(other.length){
+    if(categories.some(function(cat){return list.some(function(x){return x.category===cat;});}))
+      out+='<div class="section">Uncategorized</div>';
+    other.forEach(function(x){out+=itemHTML(x,checklist);});
+  }
+  return out;
+}
+
+function itemHTML(x,checklist){
+  if(checklist){
+    return '<div class="item checkrow" data-action="check" data-id="'+esc(x.id)+'">'+
+      '<div class="checkbox">✓</div><div class="iteminfo">'+
+      '<div class="itemname">'+esc(x.name)+'</div>'+
+      (x.qty?'<div class="qty">'+esc(x.qty)+'</div>':'')+
+      '</div></div>';
+  }
+  return '<div class="item">'+
+    '<div class="iteminfo"><div class="itemname">'+esc(x.name)+'</div>'+
+    (x.qty?'<div class="qty">'+esc(x.qty)+'</div>':'')+
+    (x.category?'<span class="badge">'+esc(x.category)+'</span>':'')+
+    '</div><div class="actions">'+
+    '<button class="action" type="button" data-action="edit" data-id="'+esc(x.id)+'" aria-label="Edit">✎</button>'+
+    '<button class="action" type="button" data-action="delete" data-id="'+esc(x.id)+'" aria-label="Delete">×</button>'+
+    '</div></div>';
+}
+
+function render(){
+  var active=items.filter(function(x){return !x.done;});
+  var buy=document.getElementById("buyItems");
+  var check=document.getElementById("checkItems");
+
+  buy.innerHTML=active.length?groupedHTML(active,false):
+    '<div class="empty"><div class="emoji">🛍️</div><strong>Your list is empty</strong>Add your first grocery above.</div>';
+
+  check.innerHTML=active.length?groupedHTML(active,true):
+    '<div class="empty"><div class="emoji">🎉</div><strong>Nothing to shop for</strong>Your checklist is empty.</div>';
+}
+
+function addItem(){
+  var name=document.getElementById("itemName").value.trim();
+  if(!name){
+    document.getElementById("itemName").focus();
+    showToast("Enter a grocery item first");
+    return;
+  }
+  items.push({
+    id:id(),
+    name:name,
+    qty:document.getElementById("itemQty").value.trim(),
+    category:document.getElementById("itemCategory").value,
+    done:false
+  });
+  save();
+  render();
+  document.getElementById("itemName").value="";
+  document.getElementById("itemQty").value="";
+  document.getElementById("itemCategory").value="";
+  document.getElementById("itemName").focus();
+  showToast("Added to your list");
+}
+
+function openEdit(itemId){
+  var x=items.find(function(a){return a.id===itemId;});
+  if(!x)return;
+  editingId=itemId;
+  document.getElementById("editName").value=x.name;
+  document.getElementById("editQty").value=x.qty||"";
+  document.getElementById("editCategory").value=x.category||"";
+  document.getElementById("editModal").classList.add("show");
+}
+
+function closeEdit(){
+  editingId=null;
+  document.getElementById("editModal").classList.remove("show");
+}
+
+function saveEdit(){
+  var name=document.getElementById("editName").value.trim();
+  if(!name){showToast("Item name cannot be empty");return;}
+  var x=items.find(function(a){return a.id===editingId;});
+  if(!x)return;
+  x.name=name;
+  x.qty=document.getElementById("editQty").value.trim();
+  x.category=document.getElementById("editCategory").value;
+  save(); render(); closeEdit(); showToast("Item updated");
+}
+
+function deleteItem(itemId){
+  var index=items.findIndex(function(a){return a.id===itemId;});
+  if(index<0)return;
+  lastDeleted={item:items[index],index:index};
+  items.splice(index,1);
+  save(); render(); showToast("Item deleted");
+}
+
+function checkItem(itemId){
+  var x=items.find(function(a){return a.id===itemId;});
+  if(!x)return;
+  x.done=true;
+  save(); render(); showToast(x.name+" checked off");
+}
+
+document.getElementById("navBuy").addEventListener("click",function(){switchPage("buy");});
+document.getElementById("navCheck").addEventListener("click",function(){switchPage("check");});
+document.getElementById("addButton").addEventListener("click",addItem);
+document.getElementById("saveEdit").addEventListener("click",saveEdit);
+document.getElementById("cancelEdit").addEventListener("click",closeEdit);
+
+document.getElementById("itemName").addEventListener("keydown",function(e){
+  if(e.key==="Enter")document.getElementById("itemQty").focus();
+});
+document.getElementById("itemQty").addEventListener("keydown",function(e){
+  if(e.key==="Enter")addItem();
+});
+
+document.addEventListener("click",function(e){
+  var el=e.target.closest("[data-action]");
+  if(!el)return;
+  var action=el.getAttribute("data-action");
+  var itemId=el.getAttribute("data-id");
+  if(action==="edit")openEdit(itemId);
+  else if(action==="delete")deleteItem(itemId);
+  else if(action==="check")checkItem(itemId);
+});
+
+document.getElementById("editModal").addEventListener("click",function(e){
+  if(e.target===this)closeEdit();
+});
+
+load();
+render();
+})();
+</script>
+</body>
+</html>
