@@ -304,6 +304,34 @@ document.getElementById("editModal").addEventListener("click",function(e){
   if(e.target===this)closeEdit();
 });
 
+function sharePending(){
+  var active=items.filter(function(x){return !x.done;});
+  if(!active.length){showToast("No pending items to share");return;}
+  var lines=["🛒 Grocery list",""];
+  categories.forEach(function(cat){
+    var arr=active.filter(function(x){return x.category===cat;});
+    if(!arr.length)return;
+    lines.push("• "+cat);
+    arr.forEach(function(x){lines.push("  ☐ "+x.name+(x.qty?" — "+x.qty:""));});
+    lines.push("");
+  });
+  var other=active.filter(function(x){return !x.category||categories.indexOf(x.category)<0;});
+  if(other.length){
+    lines.push("• Other");
+    other.forEach(function(x){lines.push("  ☐ "+x.name+(x.qty?" — "+x.qty:""));});
+    lines.push("");
+  }
+  var text=lines.join("\n").trim();
+  var wa="https://wa.me/?text="+encodeURIComponent(text);
+  if(navigator.share){
+    navigator.share({title:"Grocery list",text:text}).catch(function(){});
+  }else{
+    window.location.href=wa;
+  }
+}
+
+document.getElementById("shareButton").addEventListener("click",sharePending);
+
 load();
 render();
 })();
