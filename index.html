@@ -4,362 +4,179 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="apple-mobile-web-app-capable" content="yes">
-<meta name="theme-color" content="#315c43">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="theme-color" content="#f7f9f5">
 <title>Grocery Checklist</title>
 <style>
 *{box-sizing:border-box}
-body{margin:0;background:#f7f7f2;color:#20231f;font-family:-apple-system,BlinkMacSystemFont,"SF Pro Display","Segoe UI",sans-serif}
+body{margin:0;background:#f7f9f5;color:#17231c;font-family:-apple-system,BlinkMacSystemFont,"SF Pro Display","Segoe UI",sans-serif}
 button,input,select{font:inherit}
-.app{width:100%;max-width:600px;min-height:100vh;margin:auto;padding:20px 18px 100px}
-header{padding:12px 2px 20px}
-h1{font-size:32px;line-height:1.05;margin:0 0 7px;letter-spacing:-1px}
-.subtitle{color:#777b74;font-size:15px}
-.nav{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:20px}
-.nav button{border:0;border-radius:14px;padding:14px 8px;background:#e8e9e2;color:#6b7068;font-weight:800;cursor:pointer;-webkit-tap-highlight-color:transparent}
-.nav button.active{background:#315c43;color:#fff}
-.page{display:none}
-.page.active{display:block}
-.card{background:#fff;border-radius:18px;padding:17px;box-shadow:0 2px 12px #0000000b;margin-bottom:18px}
-label{display:block;font-size:12px;font-weight:800;color:#666b63;margin-bottom:7px;letter-spacing:.4px}
-input,select{width:100%;border:1px solid #e1e3dc;border-radius:12px;background:#fff;padding:14px;font-size:17px;outline:none}
-input:focus,select:focus{border-color:#315c43;box-shadow:0 0 0 3px #315c4312}
-.field{margin-bottom:14px}
-.add{width:100%;border:0;border-radius:13px;background:#315c43;color:#fff;padding:15px;font-weight:800;cursor:pointer;-webkit-tap-highlight-color:transparent}
-.add:active,.action:active,.nav button:active{transform:scale(.98)}
-.section{font-size:12px;font-weight:900;color:#777b74;letter-spacing:1px;text-transform:uppercase;margin:18px 3px 8px}
-.item{display:flex;align-items:center;gap:12px;background:#fff;border-radius:16px;padding:13px;margin:8px 0;box-shadow:0 1px 7px #00000008}
-.iteminfo{flex:1;min-width:0}
-.itemname{font-size:17px;font-weight:750;overflow-wrap:anywhere}
-.qty{font-size:14px;color:#777b74;margin-top:3px}
-.badge{display:inline-block;margin-top:6px;background:#edf2ed;color:#315c43;padding:4px 8px;border-radius:7px;font-size:12px;font-weight:700}
-.actions{display:flex;gap:6px}
-.action{width:44px;height:44px;border:0;border-radius:11px;background:#f0f1eb;cursor:pointer;display:grid;place-items:center;font-size:19px}
-.checkrow{cursor:pointer}
-.checkbox{width:29px;height:29px;border:2px solid #aeb4aa;border-radius:50%;flex:none;display:grid;place-items:center;color:white;font-weight:900}
-.empty{text-align:center;padding:48px 20px;color:#777b74}
-.empty .emoji{font-size:42px;margin-bottom:10px}
-.empty strong{display:block;color:#20231f;font-size:18px;margin-bottom:5px}
-.modal{position:fixed;inset:0;background:#0006;display:none;align-items:flex-end;z-index:20}
-.modal.show{display:flex}
-.sheet{width:100%;max-width:600px;margin:auto;background:white;border-radius:22px 22px 0 0;padding:20px 18px calc(22px + env(safe-area-inset-bottom))}
-.sheet h2{margin:0 0 17px;font-size:22px}
-.cancel{width:100%;border:0;border-radius:12px;padding:14px;background:#eee;margin-top:9px;font-weight:800}
-.toast{position:fixed;left:50%;bottom:25px;transform:translate(-50%,20px);background:#20231f;color:#fff;padding:12px 16px;border-radius:13px;opacity:0;pointer-events:none;transition:.2s;z-index:30;font-size:14px}
-.toast.show{opacity:1;transform:translate(-50%,0)}
+.app{max-width:620px;margin:auto;min-height:100vh;padding:20px 18px calc(90px + env(safe-area-inset-bottom))}
+header{padding:10px 2px 20px;display:flex;align-items:center;justify-content:space-between}
+.brand{display:flex;gap:12px;align-items:center}.cart{font-size:39px}.title{font-size:30px;font-weight:850;letter-spacing:-1px}.tag{color:#69746c;font-size:15px;margin-top:3px}
+.nav{display:grid;grid-template-columns:1fr 1fr;background:#eef1ec;border-radius:15px;padding:4px;margin-bottom:18px}
+.nav button{border:0;border-radius:12px;padding:14px 8px;background:transparent;color:#657067;font-weight:800;cursor:pointer}
+.nav button.active{background:#159447;color:white;box-shadow:0 2px 7px #0001}
+.page{display:none}.page.active{display:block}
+.filter{width:100%;border:1px solid #dce2db;background:white;border-radius:14px;padding:13px 14px;margin-bottom:13px;color:#26332b}
+.summary{display:flex;justify-content:space-between;align-items:center;margin:5px 3px 14px;color:#657067}.pending{color:#b43c3c;font-weight:850}.share{display:block;width:100%;border:0;border-radius:13px;background:#159447;color:white;padding:15px;font-weight:850;margin:0 0 16px;cursor:pointer}.share:active,.add:active,.action:active,.nav button:active{transform:scale(.98)}
+.card{background:white;border-radius:18px;padding:17px;box-shadow:0 2px 12px #0000000a;margin-bottom:18px}
+label{display:block;font-size:12px;font-weight:850;color:#69746c;margin-bottom:7px;letter-spacing:.5px}
+input,select{width:100%;border:1px solid #dfe4df;border-radius:12px;background:#fff;padding:14px;font-size:17px;outline:none}
+input:focus,select:focus{border-color:#159447;box-shadow:0 0 0 3px #15944718}
+.field{margin-bottom:14px}.add{width:100%;border:0;border-radius:13px;background:#159447;color:#fff;padding:15px;font-weight:850;cursor:pointer}
+.section{font-size:12px;font-weight:900;color:#788179;text-transform:uppercase;letter-spacing:1px;margin:18px 3px 8px}
+.item{display:flex;align-items:center;gap:12px;background:#fff;border-radius:16px;padding:13px;margin:8px 0;box-shadow:0 1px 8px #00000009}
+.info{flex:1;min-width:0}.name{font-size:17px;font-weight:750;overflow-wrap:anywhere}.qty{font-size:14px;color:#737d76;margin-top:3px}.badge{display:inline-block;margin-top:6px;background:#edf5ef;color:#28603f;padding:4px 8px;border-radius:7px;font-size:12px;font-weight:750}
+.actions{display:flex;gap:6px}.action{width:44px;height:44px;border:0;border-radius:11px;background:#f0f2ee;cursor:pointer;font-size:19px}
+.checkrow{cursor:pointer}.check{width:29px;height:29px;border:2px solid #aeb7af;border-radius:50%;flex:none;display:grid;place-items:center;color:transparent;font-weight:900}.checkrow:active .check{transform:scale(.92)}
+.empty{text-align:center;padding:48px 20px;color:#737d76}.empty .emoji{font-size:42px}.empty strong{display:block;color:#17231c;font-size:18px;margin:8px 0 4px}
+.modal{position:fixed;inset:0;background:#0006;display:none;align-items:flex-end;z-index:20}.modal.show{display:flex}
+.sheet{width:100%;max-width:620px;margin:auto;background:#fff;border-radius:22px 22px 0 0;padding:20px 18px calc(22px + env(safe-area-inset-bottom))}
+.sheet h2{margin:0 0 18px}.cancel{width:100%;border:0;border-radius:12px;padding:14px;background:#eee;margin-top:9px;font-weight:800}
+.toast{position:fixed;left:50%;bottom:24px;transform:translate(-50%,20px);background:#17231c;color:white;padding:12px 16px;border-radius:13px;opacity:0;pointer-events:none;transition:.2s;z-index:40;white-space:nowrap}.toast.show{opacity:1;transform:translate(-50%,0)}
 </style>
 </head>
 <body>
 <div class="app">
-<header>
-<h1>Grocery Checklist 🛒</h1>
-<div class="subtitle">Add what you need. Check it off when you shop.</div>
-</header>
+<header><div class="brand"><div class="cart">🛒</div><div><div class="title">Grocery Checklist</div><div class="tag">Plan. Shop. Check. Easy.</div></div></div></header>
 
 <div class="nav">
-<button id="navBuy" class="active" type="button">📝 To Buy</button>
-<button id="navCheck" type="button">✅ Checklist</button>
+<button id="buyTab" class="active" type="button">☷ &nbsp; To Buy</button>
+<button id="checkTab" type="button">✓ &nbsp; Checklist</button>
 </div>
 
-<section id="pageBuy" class="page active">
+<section id="buyPage" class="page active">
 <div class="card">
-<label for="itemName">ITEM</label>
-<input id="itemName" type="text" placeholder="e.g. Milk" autocomplete="off">
-
-<div class="field" style="margin-top:14px">
-<label for="itemQty">QUANTITY <span style="font-weight:500;color:#999">(optional)</span></label>
-<input id="itemQty" type="text" placeholder="e.g. 2 litres, 500 g, 3 packets" autocomplete="off">
+<label>ITEM</label><input id="name" placeholder="e.g. Milk" autocomplete="off">
+<div class="field" style="margin-top:14px"><label>QUANTITY <span style="font-weight:500;color:#999">(optional)</span></label><input id="qty" placeholder="e.g. 2 litres, 500 g, 3 packets" autocomplete="off"></div>
+<div class="field"><label>CATEGORY <span style="font-weight:500;color:#999">(optional)</span></label><select id="category"><option value="">No category</option><option>Produce</option><option>Dairy</option><option>Pantry</option><option>Household</option></select></div>
+<button id="add" class="add" type="button">＋ Add to list</button>
 </div>
-
-<div class="field">
-<label for="itemCategory">CATEGORY <span style="font-weight:500;color:#999">(optional)</span></label>
-<select id="itemCategory">
-<option value="">No category</option>
-<option value="Produce">Produce</option>
-<option value="Dairy">Dairy</option>
-<option value="Pantry">Pantry</option>
-<option value="Household">Household</option>
-</select>
-</div>
-
-<button id="addButton" class="add" type="button">＋ Add to list</button>
-</div>
-<div id="buyItems"></div>
+<div id="buyList"></div>
 </section>
 
-<section id="pageCheck" class="page">
-<div id="checkItems"></div>
+<section id="checkPage" class="page">
+<select id="filter" class="filter"><option value="">All categories</option><option>Produce</option><option>Dairy</option><option>Pantry</option><option>Household</option></select>
+<div class="summary"><span><span id="pendingCount">0</span> pending</span><span>Tap an item when bought</span></div>
+<button id="snapshot" class="share" type="button">📸 Save snapshot of pending items</button>
+<div id="checkList"></div>
 </section>
 </div>
 
-<div id="editModal" class="modal">
-<div class="sheet">
+<div id="editModal" class="modal"><div class="sheet">
 <h2>Edit grocery item</h2>
-<label for="editName">ITEM</label>
-<input id="editName" type="text">
-<div class="field" style="margin-top:14px">
-<label for="editQty">QUANTITY <span style="font-weight:500;color:#999">(optional)</span></label>
-<input id="editQty" type="text">
-</div>
-<div class="field">
-<label for="editCategory">CATEGORY <span style="font-weight:500;color:#999">(optional)</span></label>
-<select id="editCategory">
-<option value="">No category</option>
-<option value="Produce">Produce</option>
-<option value="Dairy">Dairy</option>
-<option value="Pantry">Pantry</option>
-<option value="Household">Household</option>
-</select>
-</div>
-<button id="saveEdit" class="add" type="button">Save changes</button>
-<button id="cancelEdit" class="cancel" type="button">Cancel</button>
-</div>
-</div>
-
+<label>ITEM</label><input id="editName">
+<div class="field" style="margin-top:14px"><label>QUANTITY <span style="font-weight:500;color:#999">(optional)</span></label><input id="editQty"></div>
+<div class="field"><label>CATEGORY <span style="font-weight:500;color:#999">(optional)</span></label><select id="editCat"><option value="">No category</option><option>Produce</option><option>Dairy</option><option>Pantry</option><option>Household</option></select></div>
+<button id="saveEdit" class="add" type="button">Save changes</button><button id="cancelEdit" class="cancel" type="button">Cancel</button>
+</div></div>
 <div id="toast" class="toast"></div>
 
 <script>
 (function(){
 "use strict";
+var KEY="grocery-checklist-snapshot-v1", items=[], editing=null, timer=null;
+var cats=["Produce","Dairy","Pantry","Household"];
 
-var STORAGE="grocery-checklist-final-v1";
-var categories=["Produce","Dairy","Pantry","Household"];
-var items=[];
-var editingId=null;
-var lastDeleted=null;
-var toastTimer=null;
+function $(id){return document.getElementById(id)}
+function esc(v){return String(v||"").replace(/[&<>"']/g,function(c){return {"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]})}
+function save(){try{localStorage.setItem(KEY,JSON.stringify(items))}catch(e){}}
+function load(){try{items=JSON.parse(localStorage.getItem(KEY)||"[]")||[]}catch(e){items=[]}}
+function toast(t){$("toast").textContent=t;$("toast").classList.add("show");clearTimeout(timer);timer=setTimeout(function(){$("toast").classList.remove("show")},2200)}
+function switchPage(which){var buy=which==="buy";$("buyPage").classList.toggle("active",buy);$("checkPage").classList.toggle("active",!buy);$("buyTab").classList.toggle("active",buy);$("checkTab").classList.toggle("active",!buy);if(!buy)render()}
+function id(){return Date.now().toString(36)+"-"+Math.random().toString(36).slice(2)}
 
-function load(){
-  try{
-    var raw=localStorage.getItem(STORAGE);
-    if(raw) items=JSON.parse(raw)||[];
-  }catch(e){items=[];}
+function itemCard(x){
+return '<div class="item"><div class="info"><div class="name">'+esc(x.name)+'</div>'+(x.qty?'<div class="qty">'+esc(x.qty)+'</div>':'')+(x.category?'<span class="badge">'+esc(x.category)+'</span>':'')+'</div><div class="actions"><button class="action" type="button" data-a="edit" data-id="'+esc(x.id)+'">✎</button><button class="action" type="button" data-a="delete" data-id="'+esc(x.id)+'">×</button></div></div>'
 }
+function checkCard(x){return '<div class="item checkrow" data-a="check" data-id="'+esc(x.id)+'"><div class="check">✓</div><div class="info"><div class="name">'+esc(x.name)+'</div>'+(x.qty?'<div class="qty">'+esc(x.qty)+'</div>':'')+'</div></div>'}
 
-function save(){
-  try{localStorage.setItem(STORAGE,JSON.stringify(items));}
-  catch(e){}
-}
-
-function id(){
-  return Date.now().toString(36)+"-"+Math.random().toString(36).slice(2);
-}
-
-function esc(value){
-  return String(value||"").replace(/[&<>"']/g,function(c){
-    return {"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c];
-  });
-}
-
-function showToast(text){
-  var t=document.getElementById("toast");
-  t.textContent=text;
-  t.classList.add("show");
-  clearTimeout(toastTimer);
-  toastTimer=setTimeout(function(){t.classList.remove("show");},2200);
-}
-
-function switchPage(page){
-  var buy=page==="buy";
-  document.getElementById("pageBuy").classList.toggle("active",buy);
-  document.getElementById("pageCheck").classList.toggle("active",!buy);
-  document.getElementById("navBuy").classList.toggle("active",buy);
-  document.getElementById("navCheck").classList.toggle("active",!buy);
-}
-
-function groupedHTML(list, checklist){
-  var out="";
-  categories.forEach(function(cat){
-    var arr=list.filter(function(x){return x.category===cat;});
-    if(!arr.length)return;
-    out+='<div class="section">'+cat+'</div>';
-    arr.forEach(function(x){out+=itemHTML(x,checklist);});
-  });
-  var other=list.filter(function(x){return !x.category||categories.indexOf(x.category)<0;});
-  if(other.length){
-    if(categories.some(function(cat){return list.some(function(x){return x.category===cat;});}))
-      out+='<div class="section">Uncategorized</div>';
-    other.forEach(function(x){out+=itemHTML(x,checklist);});
-  }
-  return out;
-}
-
-function itemHTML(x,checklist){
-  if(checklist){
-    return '<div class="item checkrow" data-action="check" data-id="'+esc(x.id)+'">'+
-      '<div class="checkbox">✓</div><div class="iteminfo">'+
-      '<div class="itemname">'+esc(x.name)+'</div>'+
-      (x.qty?'<div class="qty">'+esc(x.qty)+'</div>':'')+
-      '</div></div>';
-  }
-  return '<div class="item">'+
-    '<div class="iteminfo"><div class="itemname">'+esc(x.name)+'</div>'+
-    (x.qty?'<div class="qty">'+esc(x.qty)+'</div>':'')+
-    (x.category?'<span class="badge">'+esc(x.category)+'</span>':'')+
-    '</div><div class="actions">'+
-    '<button class="action" type="button" data-action="edit" data-id="'+esc(x.id)+'" aria-label="Edit">✎</button>'+
-    '<button class="action" type="button" data-action="delete" data-id="'+esc(x.id)+'" aria-label="Delete">×</button>'+
-    '</div></div>';
+function grouped(list,check){
+var out="";
+cats.forEach(function(c){var a=list.filter(function(x){return x.category===c});if(!a.length)return;out+='<div class="section">'+c+'</div>';a.forEach(function(x){out+=check?checkCard(x):itemCard(x)})});
+var other=list.filter(function(x){return !x.category||cats.indexOf(x.category)<0});
+if(other.length){out+='<div class="section">Uncategorized</div>';other.forEach(function(x){out+=check?checkCard(x):itemCard(x)})}
+return out
 }
 
 function render(){
-  var active=items.filter(function(x){return !x.done;});
-  var buy=document.getElementById("buyItems");
-  var check=document.getElementById("checkItems");
-
-  buy.innerHTML=active.length?groupedHTML(active,false):
-    '<div class="empty"><div class="emoji">🛍️</div><strong>Your list is empty</strong>Add your first grocery above.</div>';
-
-  check.innerHTML=active.length?groupedHTML(active,true):
-    '<div class="empty"><div class="emoji">🎉</div><strong>Nothing to shop for</strong>Your checklist is empty.</div>';
+var active=items.filter(function(x){return !x.done});
+$("buyList").innerHTML=active.length?grouped(active,false):'<div class="empty"><div class="emoji">🛍️</div><strong>Your list is empty</strong>Add your first grocery above.</div>';
+var f=$("filter").value;
+var shown=active.filter(function(x){return !f||x.category===f});
+$("pendingCount").textContent=shown.length;
+$("checkList").innerHTML=shown.length?grouped(shown,true):'<div class="empty"><div class="emoji">🎉</div><strong>Nothing here</strong>All matching items are checked off.';
 }
 
-function addItem(){
-  var name=document.getElementById("itemName").value.trim();
-  if(!name){
-    document.getElementById("itemName").focus();
-    showToast("Enter a grocery item first");
-    return;
-  }
-  items.push({
-    id:id(),
-    name:name,
-    qty:document.getElementById("itemQty").value.trim(),
-    category:document.getElementById("itemCategory").value,
-    done:false
-  });
-  save();
-  render();
-  document.getElementById("itemName").value="";
-  document.getElementById("itemQty").value="";
-  document.getElementById("itemCategory").value="";
-  document.getElementById("itemName").focus();
-  showToast("Added to your list");
+function add(){
+var n=$("name").value.trim();if(!n){$("name").focus();toast("Enter an item first");return}
+items.push({id:id(),name:n,qty:$("qty").value.trim(),category:$("category").value,done:false});save();render();$("name").value="";$("qty").value="";$("category").value="";$("name").focus();toast("Added to list")
 }
-
-function openEdit(itemId){
-  var x=items.find(function(a){return a.id===itemId;});
-  if(!x)return;
-  editingId=itemId;
-  document.getElementById("editName").value=x.name;
-  document.getElementById("editQty").value=x.qty||"";
-  document.getElementById("editCategory").value=x.category||"";
-  document.getElementById("editModal").classList.add("show");
+function edit(id){
+var x=items.find(function(a){return a.id===id});if(!x)return;editing=id;$("editName").value=x.name;$("editQty").value=x.qty||"";$("editCat").value=x.category||"";$("editModal").classList.add("show")
 }
-
-function closeEdit(){
-  editingId=null;
-  document.getElementById("editModal").classList.remove("show");
-}
-
+function closeEdit(){$("editModal").classList.remove("show");editing=null}
 function saveEdit(){
-  var name=document.getElementById("editName").value.trim();
-  if(!name){showToast("Item name cannot be empty");return;}
-  var x=items.find(function(a){return a.id===editingId;});
-  if(!x)return;
-  x.name=name;
-  x.qty=document.getElementById("editQty").value.trim();
-  x.category=document.getElementById("editCategory").value;
-  save(); render(); closeEdit(); showToast("Item updated");
+var n=$("editName").value.trim();if(!n){toast("Item name cannot be empty");return}
+var x=items.find(function(a){return a.id===editing});if(!x)return;x.name=n;x.qty=$("editQty").value.trim();x.category=$("editCat").value;save();render();closeEdit();toast("Item updated")
 }
+function del(id){items=items.filter(function(x){return x.id!==id});save();render();toast("Item deleted")}
+function check(id){var x=items.find(function(a){return a.id===id});if(!x)return;x.done=true;save();render();toast(x.name+" checked off")}
 
-function deleteItem(itemId){
-  var index=items.findIndex(function(a){return a.id===itemId;});
-  if(index<0)return;
-  lastDeleted={item:items[index],index:index};
-  items.splice(index,1);
-  save(); render(); showToast("Item deleted");
-}
-
-function checkItem(itemId){
-  var x=items.find(function(a){return a.id===itemId;});
-  if(!x)return;
-  x.done=true;
-  save(); render(); showToast(x.name+" checked off");
-}
-
-document.getElementById("navBuy").addEventListener("click",function(){switchPage("buy");});
-document.getElementById("navCheck").addEventListener("click",function(){switchPage("check");});
-document.getElementById("addButton").addEventListener("click",addItem);
-document.getElementById("saveEdit").addEventListener("click",saveEdit);
-document.getElementById("cancelEdit").addEventListener("click",closeEdit);
-
-document.getElementById("itemName").addEventListener("keydown",function(e){
-  if(e.key==="Enter")document.getElementById("itemQty").focus();
+/* Creates a real PNG image of the pending list. On iPhone, the Share Sheet
+   can save it to Photos or send it to WhatsApp, Messages, Mail, etc. */
+function makeSnapshot(){
+var active=items.filter(function(x){return !x.done});
+var f=$("filter").value;if(f)active=active.filter(function(x){return x.category===f});
+if(!active.length){toast("No pending items to snapshot");return}
+var scale=2,w=900,pad=55,y=105;
+var groups=[];
+cats.forEach(function(c){var a=active.filter(function(x){return x.category===c});if(a.length)groups.push({name:c,items:a})});
+var other=active.filter(function(x){return !x.category||cats.indexOf(x.category)<0});if(other.length)groups.push({name:"Other",items:other});
+var h=155;groups.forEach(function(g){h+=58+g.items.length*54+20});h+=35;
+var canvas=document.createElement("canvas");canvas.width=w*scale;canvas.height=h*scale;
+var ctx=canvas.getContext("2d");ctx.scale(scale,scale);
+ctx.fillStyle="#f7f9f5";ctx.fillRect(0,0,w,h);
+ctx.fillStyle="#159447";ctx.fillRect(0,0,w,12);
+ctx.fillStyle="#17231c";ctx.font="800 38px -apple-system, BlinkMacSystemFont, sans-serif";ctx.fillText("🛒 Grocery Checklist",pad,65);
+ctx.fillStyle="#69746c";ctx.font="500 20px -apple-system, BlinkMacSystemFont, sans-serif";ctx.fillText("Pending items • "+new Date().toLocaleDateString(),pad,94);
+y=135;
+groups.forEach(function(g){
+ctx.fillStyle="#e7f3ea";roundRect(ctx,pad,y,w-pad*2,45,12);ctx.fill();
+ctx.fillStyle="#245f3b";ctx.font="800 22px -apple-system, BlinkMacSystemFont, sans-serif";ctx.fillText(g.name,pad+18,y+30);y+=58;
+g.items.forEach(function(x){
+ctx.strokeStyle="#aeb7af";ctx.lineWidth=3;ctx.strokeRect(pad+5,y+6,22,22);
+ctx.fillStyle="#17231c";ctx.font="600 22px -apple-system, BlinkMacSystemFont, sans-serif";ctx.fillText(x.name,pad+45,y+25);
+if(x.qty){ctx.fillStyle="#69746c";ctx.font="500 18px -apple-system, BlinkMacSystemFont, sans-serif";ctx.textAlign="right";ctx.fillText(x.qty,w-pad,y+25);ctx.textAlign="left"}
+y+=54
 });
-document.getElementById("itemQty").addEventListener("keydown",function(e){
-  if(e.key==="Enter")addItem();
+y+=20
 });
-
-document.addEventListener("click",function(e){
-  var el=e.target.closest("[data-action]");
-  if(!el)return;
-  var action=el.getAttribute("data-action");
-  var itemId=el.getAttribute("data-id");
-  if(action==="edit")openEdit(itemId);
-  else if(action==="delete")deleteItem(itemId);
-  else if(action==="check")checkItem(itemId);
-});
-
-document.getElementById("editModal").addEventListener("click",function(e){
-  if(e.target===this)closeEdit();
-});
-
-function buildPendingText(){
-  var active=items.filter(function(x){return !x.done;});
-  if(!active.length)return "";
-  var lines=["🛒 Grocery list",""];
-  categories.forEach(function(cat){
-    var arr=active.filter(function(x){return x.category===cat;});
-    if(!arr.length)return;
-    lines.push("• "+cat);
-    arr.forEach(function(x){lines.push("  ☐ "+x.name+(x.qty?" — "+x.qty:""));});
-    lines.push("");
-  });
-  var other=active.filter(function(x){return !x.category||categories.indexOf(x.category)<0;});
-  if(other.length){
-    lines.push("• Other");
-    other.forEach(function(x){lines.push("  ☐ "+x.name+(x.qty?" — "+x.qty:""));});
-  }
-  return lines.join("\n").trim();
+ctx.fillStyle="#69746c";ctx.font="500 17px -apple-system, BlinkMacSystemFont, sans-serif";ctx.textAlign="center";ctx.fillText("Shopping list",w/2,h-18);ctx.textAlign="left";
+canvas.toBlob(function(blob){
+if(!blob){toast("Could not create snapshot");return}
+var file=new File([blob],"grocery-list.png",{type:"image/png"});
+if(navigator.share && navigator.canShare && navigator.canShare({files:[file]})){
+navigator.share({title:"Grocery Checklist",text:"My pending grocery list",files:[file]}).then(function(){toast("Snapshot ready to share")}).catch(function(){});
+}else{
+var url=URL.createObjectURL(blob),a=document.createElement("a");a.href=url;a.download="grocery-list.png";document.body.appendChild(a);a.click();a.remove();setTimeout(function(){URL.revokeObjectURL(url)},1000);toast("Snapshot created. Open Downloads to save/share it.")}
+}, "image/png");
 }
+function roundRect(ctx,x,y,w,h,r){ctx.beginPath();ctx.moveTo(x+r,y);ctx.arcTo(x+w,y,x+w,y+h,r);ctx.arcTo(x+w,y+h,x,y+h,r);ctx.arcTo(x,y+h,x,y,r);ctx.arcTo(x,y,x+w,y,r);ctx.closePath()}
 
-function updateShareLink(){
-  var link=document.getElementById("shareButton");
-  var text=buildPendingText();
-  if(text){
-    link.href="https://api.whatsapp.com/send?text="+encodeURIComponent(text);
-    link.style.opacity="1";
-    link.style.pointerEvents="auto";
-  }else{
-    link.href="#";
-    link.style.opacity=".55";
-    link.style.pointerEvents="auto";
-  }
-}
-
-function sharePending(){
-  var text=buildPendingText();
-  if(!text){
-    showToast("No pending items to share");
-    return false;
-  }
-  // Keep this as a normal user-initiated navigation. This is more reliable on iPhone
-  // than window.location/window.open and will open WhatsApp or WhatsApp Web.
-  document.getElementById("shareButton").href="https://api.whatsapp.com/send?text="+encodeURIComponent(text);
-  return true;
-}
-
-document.getElementById("shareButton").addEventListener("click",function(e){
-  if(!buildPendingText()){
-    e.preventDefault();
-    showToast("No pending items to share");
-    return;
-  }
-  sharePending();
-});
-
-load();
-render();
+$("buyTab").addEventListener("click",function(){switchPage("buy")});
+$("checkTab").addEventListener("click",function(){switchPage("check")});
+$("add").addEventListener("click",add);
+$("filter").addEventListener("change",render);
+$("snapshot").addEventListener("click",makeSnapshot);
+$("saveEdit").addEventListener("click",saveEdit);
+$("cancelEdit").addEventListener("click",closeEdit);
+$("name").addEventListener("keydown",function(e){if(e.key==="Enter")$("qty").focus()});
+$("qty").addEventListener("keydown",function(e){if(e.key==="Enter")add()});
+document.addEventListener("click",function(e){var el=e.target.closest("[data-a]");if(!el)return;var a=el.getAttribute("data-a"),i=el.getAttribute("data-id");if(a==="edit")edit(i);else if(a==="delete")del(i);else if(a==="check")check(i)});
+$("editModal").addEventListener("click",function(e){if(e.target===this)closeEdit()});
+load();render();
 })();
 </script>
 </body>
