@@ -83,7 +83,7 @@ input:focus,select:focus{border-color:#315c43;box-shadow:0 0 0 3px #315c4312}
 
 <button id="addButton" class="add" type="button">＋ Add to list</button>
 </div>
-<div id="buyItems"></div>
+<button id="shareBuyButton" class="share" type="button">🟢 Share pending list on WhatsApp</button><div id="buyItems"></div>
 </section>
 
 <section id="pageCheck" class="page">
@@ -322,15 +322,11 @@ function sharePending(){
     lines.push("");
   }
   var text=lines.join("\n").trim();
-  var wa="https://wa.me/?text="+encodeURIComponent(text);
-  if(navigator.share){
-    navigator.share({title:"Grocery list",text:text}).catch(function(){});
-  }else{
-    window.location.href=wa;
-  }
+  window.location.href="https://wa.me/?text="+encodeURIComponent(text);
 }
 
 document.getElementById("shareButton").addEventListener("click",sharePending);
+document.getElementById("shareBuyButton").addEventListener("click",sharePending);
 
 load();
 render();
