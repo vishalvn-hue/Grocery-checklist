@@ -83,7 +83,7 @@ input:focus,select:focus{border-color:#315c43;box-shadow:0 0 0 3px #315c4312}
 
 <button id="addButton" class="add" type="button">＋ Add to list</button>
 </div>
-<button id="shareBuyButton" class="share" type="button">🟢 Share pending list on WhatsApp</button><div id="buyItems"></div>
+<div id="buyItems"></div>
 </section>
 
 <section id="pageCheck" class="page">
@@ -304,9 +304,9 @@ document.getElementById("editModal").addEventListener("click",function(e){
   if(e.target===this)closeEdit();
 });
 
-function sharePending(){
+function buildPendingText(){
   var active=items.filter(function(x){return !x.done;});
-  if(!active.length){showToast("No pending items to share");return;}
+  if(!active.length)return "";
   var lines=["🛒 Grocery list",""];
   categories.forEach(function(cat){
     var arr=active.filter(function(x){return x.category===cat;});
@@ -319,14 +319,44 @@ function sharePending(){
   if(other.length){
     lines.push("• Other");
     other.forEach(function(x){lines.push("  ☐ "+x.name+(x.qty?" — "+x.qty:""));});
-    lines.push("");
   }
-  var text=lines.join("\n").trim();
-  window.location.href="https://wa.me/?text="+encodeURIComponent(text);
+  return lines.join("\n").trim();
 }
 
-document.getElementById("shareButton").addEventListener("click",sharePending);
-document.getElementById("shareBuyButton").addEventListener("click",sharePending);
+function updateShareLink(){
+  var link=document.getElementById("shareButton");
+  var text=buildPendingText();
+  if(text){
+    link.href="https://api.whatsapp.com/send?text="+encodeURIComponent(text);
+    link.style.opacity="1";
+    link.style.pointerEvents="auto";
+  }else{
+    link.href="#";
+    link.style.opacity=".55";
+    link.style.pointerEvents="auto";
+  }
+}
+
+function sharePending(){
+  var text=buildPendingText();
+  if(!text){
+    showToast("No pending items to share");
+    return false;
+  }
+  // Keep this as a normal user-initiated navigation. This is more reliable on iPhone
+  // than window.location/window.open and will open WhatsApp or WhatsApp Web.
+  document.getElementById("shareButton").href="https://api.whatsapp.com/send?text="+encodeURIComponent(text);
+  return true;
+}
+
+document.getElementById("shareButton").addEventListener("click",function(e){
+  if(!buildPendingText()){
+    e.preventDefault();
+    showToast("No pending items to share");
+    return;
+  }
+  sharePending();
+});
 
 load();
 render();
